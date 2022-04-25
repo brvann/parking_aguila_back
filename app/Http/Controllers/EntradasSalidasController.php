@@ -40,13 +40,33 @@ class EntradasSalidasController extends Controller
             $vehiculo->tipo= 'no_residente';
             $vehiculo->save();
         }
-        
-        $hora_entrada = date("h:i:s");
-        $estancia = new entradas_salidas;
-        $estancia->hora_entrada = $hora_entrada;
-        $estancia->placa = $request->placa;
-        $estancia->save();
-        return $estancia;
+
+        $estancia = entradas_salidas::where('placa',$request->placa)->where('eliminado', false)->first();
+        if($estancia != null) {
+            $hora_salida = date("h:i:s");
+            $estancia->hora_salida = $hora_salida;
+            $estancia->eliminado = true;
+            $estancia->save();
+            $hora_entrada = $estancia->hora_entrada;
+            $entrada = new \Carbon\Carbon($hora_entrada);
+            $salida = new \Carbon\Carbon($hora_salida);
+            $minutesDiff = $entrada->diffInMinutes($salida);
+
+            $vehiculo = Vehiculos::find($request->placa);
+            $vehiculo->tiempo_total += $minutesDiff;
+            $vehiculo->saldo_vencido += $vehiculo->tiempo_total * $vehiculo->tipoRel->precio_minuto;
+            $vehiculo->save();
+
+            return $estancia;
+        }
+        else {
+            $hora_entrada = date("h:i:s");
+            $estancia = new entradas_salidas;
+            $estancia->hora_entrada = $hora_entrada;
+            $estancia->placa = $request->placa;
+            $estancia->save();
+            return $estancia;
+        }
     }
 
     public function altaSalida(Storeentradas_salidasRequest $request)
