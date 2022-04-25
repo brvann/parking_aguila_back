@@ -22,6 +22,6 @@ class vehiculos extends Model
 
     public function estancia()
     {
-        $this->hasOne("App/entradas_salidas","placa","placa");
+        return $this->hasOne('App\Models\entradas_salidas',"placa","placa");
     }
 }

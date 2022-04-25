@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\entradas_salidas;
+use App\Models\vehiculos;
 use App\Http\Requests\Storeentradas_salidasRequest;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,10 @@ class EntradasSalidasController extends Controller
      */
     public function index()
     {
-        return entradas_salidas::All();
+        $estancias = entradas_salidas::where('eliminado',false)->get();
+        //return date("h:i:s");
+
+        return $estancias;
     }
 
     /**
@@ -26,11 +30,23 @@ class EntradasSalidasController extends Controller
      */
     public function store(Storeentradas_salidasRequest $request)
     {
-        $request->validate([
-            'hora_entrada' => 'required'
-        ]);
-
-        return entradas_salidas::create($request->all());
+        $vehiculo = Vehiculos::find($request->placa);
+        
+        if($vehiculo == null) {
+            
+            $vehiculo = new Vehiculos;
+            $vehiculo->placa= $request->placa;
+            $vehiculo->descripcion= 'no_residente';
+            $vehiculo->tipo= 'no_residente';
+            $vehiculo->save();
+        }
+        
+        $hora_entrada = date("h:i:s");
+        $estancia = new entradas_salidas;
+        $estancia->hora_entrada = $hora_entrada;
+        $estancia->placa = $request->placa;
+        $estancia->save();
+        return $estancia;
     }
 
     public function altaSalida(Storeentradas_salidasRequest $request)
@@ -69,23 +85,30 @@ class EntradasSalidasController extends Controller
       return entradas_salidas::where('placa',$placa)->first();
     }
 
-    public function update(Request $request, String $placa )
+    public function update(Request $request, String $placa )//Ala Salida
     {
-       return "s";
-        $request->validate([
-            'hora_salida' => 'required'
-        ]);
+        $hora_salida = date("h:i:s");
+        // $estancia = new entradas_salidas;
+        // $estancia->hora_salida = $hora_salida;
+        // $estancia->placa = $request->placa;
+        // $estancia->save();
+        // return $estancia;
         
-        $vehiculo = entradas_salidas::where('placa',$placa)->first();
-        if($vehiculo != null) {
-            $vehiculo->hora_salida = $request->hora_salida;
+        $estancia = entradas_salidas::where('placa',$placa)->where('eliminado', false)->first();
+        if($estancia != null) {
+            $estancia->hora_salida = $hora_salida;
+            $estancia->save();
+            $hora_entrada = $estancia->hora_entrada;
+            $entrada = new \Carbon\Carbon($hora_entrada);
+            $salida = new \Carbon\Carbon($hora_salida);
+            $minutesDiff = $entrada->diffInMinutes($salida);
 
-            // $hora_entrada = new \Carbon\Carbon($vehiculo->hora_salida);
-            // $hora_salida = new \Carbon\Carbon($request->hora_salida);
-            // $minutesDiff = $hora_entrada->diffInMinutes($hora_salida);
-
+            $vehiculo = Vehiculos::find($request->placa);
+            $vehiculo->tiempo_total += $minutesDiff;
+            $vehiculo->saldo_vencido = $vehiculo->tiempo_total * $vehiculo->tipoRel->precio_minuto;
             $vehiculo->save();
-            return $vehiculo;
+
+            return $estancia;
         }
         return null;
     }
@@ -101,10 +124,16 @@ class EntradasSalidasController extends Controller
         //
     }
 
-    public function comienzaMes(String $tipo){
+    public function comienzaMes(){
         
-        $vehiculosResidentes = Vehiculos::where('tipo',$tipo)->update(array('tiempo_total' => 00.00));
+        $vehiculos = 'App\Models\Vehiculos'::where('tipo','oficial')->get();
 
-        return $vehiculosResidentes;
+        foreach($vehiculos as $vehiculo) {
+            $estancia = entradas_salidas::find($vehiculo->estancia->id);
+            $estancia->eliminado = true;
+            $estancia->save();
+        }
+        
+        return true;
     }
 }

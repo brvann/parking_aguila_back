@@ -12,6 +12,6 @@ class entradas_salidas extends Model
 
     public function vehiculos()
     {
-        $this->hasMany("App/vehiculos","placa", "placa");
+        return $this->hasMany('App\vehiculos',"placa", "placa");
     }
 }

@@ -27,13 +27,13 @@ class VehiculosController extends Controller
 
     public function update(String $placa, Request $request)
     {
-        $vehiculo = Vehiculos::find($placa);
-        if($vehiculo != null) {
-            $vehiculo->tiempo_total = $request->tiempo_total;
-            $vehiculo->save();
-            return $vehiculo;
-        }
-        return null;
+        // $vehiculo = Vehiculos::find($placa);
+        // if($vehiculo != null) {
+        //     $vehiculo->tiempo_total = $request->tiempo_total;
+        //     $vehiculo->save();
+        //     return $vehiculo;
+        // }
+        // return null;
     }
 
     public function destroy(vehiculos $vehiculos)
@@ -41,8 +41,8 @@ class VehiculosController extends Controller
         //
     }
     
-    public function comienzaMes(String $tipo){
-        $vehiculosResidentes = Vehiculos::where('tipo',$tipo)->update(array('tiempo_total' => 00.00));
+    public function comienzaMes(){
+        $vehiculosResidentes = Vehiculos::where('tipo','residente')->update(array('tiempo_total' => 00.00));
 
         return $vehiculosResidentes;
     }
