@@ -18,6 +18,6 @@ Route::group(['middleware'=>["cors"]],function () {
     Route::apiResource("vehiculos","VehiculosController");
     Route::apiResource("estancias","EntradasSalidasController");
     Route::apiResource("tipos","TiposController");
+    Route::post("vehiculos/tareas/{tipo}","VehiculosController@comienzaMes");
 });
 
-Route::post("vehiculos/tareas","VehiculosController@comienzaMes");

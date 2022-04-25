@@ -15,7 +15,9 @@ class TiposController extends Controller
      */
     public function index()
     {
-        return tipos::All();
+        $tipos = tipos::All();
+        foreach($tipos as $tipo) $tipo->vehiculos;
+        return $tipos;
     }
 
     /**

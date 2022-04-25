@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\vehiculos;
 use App\Http\Requests\StorevehiculosRequest;
-use App\Http\Requests\UpdatevehiculosRequest;
+use Illuminate\Http\Request;
 
 class VehiculosController extends Controller
 {
@@ -20,15 +20,16 @@ class VehiculosController extends Controller
 
     public function show(String $placa)
     {
-      return Vehiculos::find($placa);
+        $vehiculo = Vehiculos::find($placa);
+        $vehiculo->tipoRel;
+      return $vehiculo;
     }
 
     public function update(String $placa, Request $request)
     {
-        
-        $vehiculo = Vehiculo::find($placa);
+        $vehiculo = Vehiculos::find($placa);
         if($vehiculo != null) {
-            $vehiculo->hora_salida = $request->hora_salida;
+            $vehiculo->tiempo_total = $request->tiempo_total;
             $vehiculo->save();
             return $vehiculo;
         }
@@ -41,7 +42,8 @@ class VehiculosController extends Controller
     }
     
     public function comienzaMes(String $tipo){
-        $vehiculosResidentes = Vehiculos::where('tipo',$request->$tipo)->update(array('tiempo_total' => 00.00));
+        $vehiculosResidentes = Vehiculos::where('tipo',$tipo)->update(array('tiempo_total' => 00.00));
+
         return $vehiculosResidentes;
     }
 }

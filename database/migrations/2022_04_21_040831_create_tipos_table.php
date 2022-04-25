@@ -14,10 +14,10 @@ class CreateTiposTable extends Migration
     public function up()
     {
         Schema::create('tipos', function (Blueprint $table) {
-            $table->id();
+            $table->string('tipo')->primary();
             $table->timestamps();
-            $table->char('tipo', 16);
             $table->decimal('precio_minuto', 2, 2);
+            
         });
 
         DB::table('tipos')->insert(
@@ -29,7 +29,7 @@ class CreateTiposTable extends Migration
 
         DB::table('tipos')->insert(
             array(
-                'tipo' => 'recidente',
+                'tipo' => 'residente',
                 'precio_minuto' => 00.05
             )
         );

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\entradas_salidas;
 use App\Http\Requests\Storeentradas_salidasRequest;
-use App\Http\Requests\Updateentradas_salidasRequest;
+use Illuminate\Http\Request;
 
 class EntradasSalidasController extends Controller
 {
@@ -26,16 +26,6 @@ class EntradasSalidasController extends Controller
      */
     public function store(Storeentradas_salidasRequest $request)
     {
-        $request->validate([
-            'hora_entrada' => 'required'
-        ]);
-
-        return entradas_salidas::create($request->all());
-    }
-
-    public function altaEntrada(Storeentradas_salidasRequest $request)
-    {
-
         $request->validate([
             'hora_entrada' => 'required'
         ]);
@@ -74,21 +64,30 @@ class EntradasSalidasController extends Controller
      * @param  \App\Models\entradas_salidas  $entradas_salidas
      * @return \Illuminate\Http\Response
      */
-    public function show(entradas_salidas $entradas_salidas)
+    public function show(String $placa)
     {
-        //
+      return entradas_salidas::where('placa',$placa)->first();
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\Updateentradas_salidasRequest  $request
-     * @param  \App\Models\entradas_salidas  $entradas_salidas
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Updateentradas_salidasRequest $request, entradas_salidas $entradas_salidas)
+    public function update(Request $request, String $placa )
     {
-        //
+       return "s";
+        $request->validate([
+            'hora_salida' => 'required'
+        ]);
+        
+        $vehiculo = entradas_salidas::where('placa',$placa)->first();
+        if($vehiculo != null) {
+            $vehiculo->hora_salida = $request->hora_salida;
+
+            // $hora_entrada = new \Carbon\Carbon($vehiculo->hora_salida);
+            // $hora_salida = new \Carbon\Carbon($request->hora_salida);
+            // $minutesDiff = $hora_entrada->diffInMinutes($hora_salida);
+
+            $vehiculo->save();
+            return $vehiculo;
+        }
+        return null;
     }
 
     /**
@@ -100,5 +99,12 @@ class EntradasSalidasController extends Controller
     public function destroy(entradas_salidas $entradas_salidas)
     {
         //
+    }
+
+    public function comienzaMes(String $tipo){
+        
+        $vehiculosResidentes = Vehiculos::where('tipo',$tipo)->update(array('tiempo_total' => 00.00));
+
+        return $vehiculosResidentes;
     }
 }

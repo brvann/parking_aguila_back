@@ -14,14 +14,16 @@ class CreateVehiculosTable extends Migration
     public function up()
     {
         Schema::create('vehiculos', function (Blueprint $table) {
-            $table->timestamps();
-            $table->char('placa', 16)->primaryKey(); 
+            $table->char('placa', 16)->primary(); 
             $table->char('descripcion', 100)->nullable();
-            $table->char('tipo', 16);
-
+            $table->string('tipo');
+            
+            $table->timestamps();
             //nuevas
             $table->integer('tiempo_total')->default(0);
             $table->decimal('saldo_vencido', 6, 2)->default(00.00);
+
+            $table->foreign('tipo')->references('tipo')->on('tipos');
             
         });
     }

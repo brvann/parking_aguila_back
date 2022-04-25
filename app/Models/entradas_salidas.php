@@ -8,5 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class entradas_salidas extends Model
 {
 
-    protected $fillable = ["id", "placa","hora_entrada","hora_salida"];
+    protected $fillable = ["id","placa","hora_entrada","hora_salida","eliminado"];
+
+    public function vehiculos()
+    {
+        $this->hasMany("App/vehiculos","placa", "placa");
+    }
 }

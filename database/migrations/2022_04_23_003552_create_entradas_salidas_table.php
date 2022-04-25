@@ -21,6 +21,7 @@ class CreateEntradasSalidasTable extends Migration
             $table->time('hora_salida', 0)->nullable();
             //nuevas
             $table->boolean('eliminado')->default(false);
+            $table->foreign('placa')->references('placa')->on('vehiculos');
         });
     }
 
